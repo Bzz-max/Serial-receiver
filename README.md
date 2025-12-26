@@ -5,6 +5,6 @@ The receiver monitors a serial input line and processes incoming data using a fi
 2. START – Detects the start condition
 3. RECEIVE – Collects 8 serial bits into a register
 4. WAIT – Handles invalid or incomplete transmissions
-5. STOP – Signals successful reception of one byte
+5. STOP – Signals successful reception of one byte <br>
 Once 8 bits are received, the module asserts done for one clock cycle and presents the received byte on the output.
 
