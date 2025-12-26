@@ -1,24 +1,18 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
 // Engineer: Armanda Byberi
 // 
 // Create Date: 12/25/2025 05:55:01 PM
-// Design Name: 
+// Design Name: Serial receiver 
 // Module Name: serial_receiver_data
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
+// Project Name: Serial receiver 
+// Description: This project designs a finite state machine with a datapath to receive serial data bytes. Each byte starts 
+// with a start bit, followed by 8 data bits (LSB first), and ends with a stop bit. The FSM detects the start bit, collects 
+// the data bits, and checks the stop bit. When a byte is received correctly, the system signals completion and outputs the
+// received byte.
+// Revision: 1.8
+//
 //////////////////////////////////////////////////////////////////////////////////
-
 
 module serial_receiver_data(
     input wire clk,
@@ -38,9 +32,8 @@ module serial_receiver_data(
             state <= IDLE;
         else 
             state <= next_state;
-        end
-   // next state logic 
-        
+	end
+	
    // Next state logic 
    always @(*) begin
        case (state)
