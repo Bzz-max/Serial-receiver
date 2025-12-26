@@ -1,0 +1,152 @@
+Time resolution is 1 ps
+T=20000 | RESET RELEASED
+
+--- TEST 1: Single byte 0xA5 ---
+T=40000 | SEND BYTE 0xa5
+T=40000 | SEND BIT  in=0
+T=50000 |   data[0]=1
+T=50000 | SEND BIT  in=1
+T=60000 |   data[1]=0
+T=60000 | SEND BIT  in=0
+T=70000 |   data[2]=1
+T=70000 | SEND BIT  in=1
+T=80000 |   data[3]=0
+T=80000 | SEND BIT  in=0
+T=90000 |   data[4]=0
+T=90000 | SEND BIT  in=0
+T=100000 |   data[5]=1
+T=100000 | SEND BIT  in=1
+T=110000 |   data[6]=0
+T=110000 | SEND BIT  in=0
+T=120000 |   data[7]=1
+T=120000 | SEND BIT  in=1
+T=130000 | SEND BIT  in=1
+T=140000 | END BYTE 0xa5
+T=145000 | DONE=1  out_bytes=0xa5
+
+--- TEST 2: Single byte 0x3C ---
+T=170000 | SEND BYTE 0x3c
+T=170000 | SEND BIT  in=0
+T=180000 |   data[0]=0
+T=180000 | SEND BIT  in=0
+T=190000 |   data[1]=0
+T=190000 | SEND BIT  in=0
+T=200000 |   data[2]=1
+T=200000 | SEND BIT  in=1
+T=210000 |   data[3]=1
+T=210000 | SEND BIT  in=1
+T=220000 |   data[4]=1
+T=220000 | SEND BIT  in=1
+T=230000 |   data[5]=1
+T=230000 | SEND BIT  in=1
+T=240000 |   data[6]=0
+T=240000 | SEND BIT  in=0
+T=250000 |   data[7]=0
+T=250000 | SEND BIT  in=0
+T=260000 | SEND BIT  in=1
+T=270000 | END BYTE 0x3c
+
+--- TEST 3: Back-to-back bytes ---
+T=300000 | SEND BYTE 0x55
+T=300000 | SEND BIT  in=0
+T=310000 |   data[0]=1
+T=310000 | SEND BIT  in=1
+T=320000 |   data[1]=0
+T=320000 | SEND BIT  in=0
+T=330000 |   data[2]=1
+T=330000 | SEND BIT  in=1
+T=340000 |   data[3]=0
+T=340000 | SEND BIT  in=0
+T=350000 |   data[4]=1
+T=350000 | SEND BIT  in=1
+T=360000 |   data[5]=0
+T=360000 | SEND BIT  in=0
+T=370000 |   data[6]=1
+T=370000 | SEND BIT  in=1
+T=380000 |   data[7]=0
+T=380000 | SEND BIT  in=0
+T=390000 | SEND BIT  in=1
+T=400000 | END BYTE 0x55
+T=400000 | SEND BYTE 0xaa
+T=400000 | SEND BIT  in=0
+T=405000 | DONE=1  out_bytes=0x55
+T=410000 |   data[0]=0
+T=410000 | SEND BIT  in=0
+T=420000 |   data[1]=1
+T=420000 | SEND BIT  in=1
+T=430000 |   data[2]=0
+T=430000 | SEND BIT  in=0
+T=440000 |   data[3]=1
+T=440000 | SEND BIT  in=1
+T=450000 |   data[4]=0
+T=450000 | SEND BIT  in=0
+T=460000 |   data[5]=1
+T=460000 | SEND BIT  in=1
+T=470000 |   data[6]=0
+T=470000 | SEND BIT  in=0
+T=480000 |   data[7]=1
+T=480000 | SEND BIT  in=1
+T=490000 | SEND BIT  in=1
+T=500000 | END BYTE 0xaa
+
+--- TEST 4: Idle gap ---
+T=535000 | DONE=1  out_bytes=0xf5
+T=580000 | SEND BYTE 0xf0
+T=580000 | SEND BIT  in=0
+T=590000 |   data[0]=0
+T=590000 | SEND BIT  in=0
+T=600000 |   data[1]=0
+T=600000 | SEND BIT  in=0
+T=610000 |   data[2]=0
+T=610000 | SEND BIT  in=0
+T=620000 |   data[3]=0
+T=620000 | SEND BIT  in=0
+T=630000 |   data[4]=1
+T=630000 | SEND BIT  in=1
+T=640000 |   data[5]=1
+T=640000 | SEND BIT  in=1
+T=650000 |   data[6]=1
+T=650000 | SEND BIT  in=1
+T=660000 |   data[7]=1
+T=660000 | SEND BIT  in=1
+T=670000 | SEND BIT  in=1
+T=680000 | END BYTE 0xf0
+
+--- TEST 5: Bad stop bit ---
+T=710000 | SEND BYTE (BAD STOP) 0x0f
+T=710000 | SEND BIT  in=0
+T=720000 | SEND BIT  in=1
+T=730000 | SEND BIT  in=1
+T=740000 | SEND BIT  in=1
+T=750000 | SEND BIT  in=1
+T=760000 | SEND BIT  in=0
+T=770000 | SEND BIT  in=0
+T=780000 | SEND BIT  in=0
+T=790000 | SEND BIT  in=0
+T=800000 | SEND BIT  in=0
+
+--- TEST 6: Noise before valid byte ---
+T=860000 | SEND BIT  in=1
+T=870000 | SEND BIT  in=0
+T=880000 | SEND BIT  in=1
+T=890000 | SEND BIT  in=1
+T=900000 | SEND BYTE 0xc3
+T=900000 | SEND BIT  in=0
+T=910000 |   data[0]=1
+T=910000 | SEND BIT  in=1
+T=920000 |   data[1]=1
+T=920000 | SEND BIT  in=1
+T=930000 |   data[2]=0
+T=930000 | SEND BIT  in=0
+T=940000 |   data[3]=0
+T=940000 | SEND BIT  in=0
+T=950000 |   data[4]=0
+T=950000 | SEND BIT  in=0
+T=960000 |   data[5]=0
+T=960000 | SEND BIT  in=0
+T=970000 |   data[6]=1
+T=970000 | SEND BIT  in=1
+T=980000 |   data[7]=1
+T=980000 | SEND BIT  in=1
+T=990000 | SEND BIT  in=1
+T=1000000 | END BYTE 0xc3
