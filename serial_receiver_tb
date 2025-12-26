@@ -1,0 +1,168 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 12/25/2025 06:22:52 PM
+// Design Name: 
+// Module Name: serial_receiver_datapath_tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+module serial_receiver_datapath_tb;  
+    reg clk;
+    reg reset;
+    reg in;
+    wire done;
+    wire [7:0] out_bytes;
+
+    // DUT
+    serial_receiver_data dut (
+        .clk(clk),
+        .reset(reset),
+        .in(in),
+        .done(done),
+        .out_bytes(out_bytes)
+    );
+
+    // ----------------------------------------
+    // Clock generation (10 ns period)
+    // ----------------------------------------
+    always #5 clk = ~clk;
+
+    // ----------------------------------------
+    // Send one serial bit + log it
+    // ----------------------------------------
+    task send_bit;
+        input value;
+        begin
+            in = value;
+            $display("T=%0t | SEND BIT  in=%b", $time, value);
+            #10;
+        end
+    endtask
+
+    // ----------------------------------------
+    // Send a valid frame (LSB first)
+    // ----------------------------------------
+    task send_byte;
+        input [7:0] data;
+        integer i;
+        begin
+            $display("T=%0t | SEND BYTE 0x%h", $time, data);
+            send_bit(0);  // start
+
+            for (i = 0; i < 8; i = i + 1) begin
+                $display("T=%0t |   data[%0d]=%b", $time, i, data[i]);
+                send_bit(data[i]);
+            end
+
+            send_bit(1);  // stop
+            $display("T=%0t | END BYTE 0x%h", $time, data);
+        end
+    endtask
+
+    // ----------------------------------------
+    // Send frame with bad stop bit
+    // ----------------------------------------
+    task send_byte_bad_stop;
+        input [7:0] data;
+        integer i;
+        begin
+            $display("T=%0t | SEND BYTE (BAD STOP) 0x%h", $time, data);
+            send_bit(0);
+
+            for (i = 0; i < 8; i = i + 1)
+                send_bit(data[i]);
+
+            send_bit(0);  // invalid stop
+        end
+    endtask
+
+    // ----------------------------------------
+    // Test sequence
+    // ----------------------------------------
+    initial begin
+        clk   = 0;
+        reset = 1;
+        in    = 1;  // idle
+
+        // Reset
+        #20;
+        reset = 0;
+        $display("T=%0t | RESET RELEASED", $time);
+        #20;
+
+        // ------------------------------------
+        // TEST 1: Single byte
+        // ------------------------------------
+        $display("\n--- TEST 1: Single byte 0xA5 ---");
+        send_byte(8'hA5);
+        #30;
+
+        // ------------------------------------
+        // TEST 2: Another single byte
+        // ------------------------------------
+        $display("\n--- TEST 2: Single byte 0x3C ---");
+        send_byte(8'h3C);
+        #30;
+
+        // ------------------------------------
+        // TEST 3: Back-to-back bytes
+        // ------------------------------------
+        $display("\n--- TEST 3: Back-to-back bytes ---");
+        send_byte(8'h55);
+        send_byte(8'hAA);
+        #30;
+
+        // ------------------------------------
+        // TEST 4: Idle gap then byte
+        // ------------------------------------
+        $display("\n--- TEST 4: Idle gap ---");
+        in = 1;
+        #50;
+        send_byte(8'hF0);
+        #30;
+
+        // ------------------------------------
+        // TEST 5: Bad stop bit
+        // ------------------------------------
+        $display("\n--- TEST 5: Bad stop bit ---");
+        send_byte_bad_stop(8'h0F);
+        #50;
+
+        // ------------------------------------
+        // TEST 6: Noise then valid byte
+        // ------------------------------------
+        $display("\n--- TEST 6: Noise before valid byte ---");
+        send_bit(1);
+        send_bit(0);
+        send_bit(1);
+        send_bit(1);
+        send_byte(8'hC3);
+        #30;
+
+        $display("\nSimulation finished");
+        $stop;
+    end
+
+    // ----------------------------------------
+    // Monitor DUT behavior
+    // ----------------------------------------
+    always @(posedge clk) begin
+        if (done) begin
+            $display("T=%0t | DONE=1  out_bytes=0x%h", $time, out_bytes);
+        end
+    end
+
+endmodule
